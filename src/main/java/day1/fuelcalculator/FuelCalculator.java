@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import utils.ResourcePathExtractor;
+
 /**
  * @author Enrique Alonso
  */
@@ -35,10 +37,7 @@ public class FuelCalculator {
 
 	public static int calculateFuelFromSpecsFile(String filePath, boolean considerFuelMass) {
 		int totalFuel = 0;
-		File file = new File(FuelCalculator.class.getClassLoader()
-				.getResource("Day1/Day1Input1.txt")
-				.getFile());
-		try (Stream<String> lines = Files.lines(file.toPath())) {
+		try (Stream<String> lines = Files.lines(ResourcePathExtractor.openResource("Day1/Day1Input1.txt"))) {
 			int[] moduleMasses = lines.mapToInt(Integer::parseInt)
 					.toArray();
 			totalFuel = calculateTotalSpacecraftFuel(moduleMasses, considerFuelMass);
