@@ -37,7 +37,7 @@ public class FuelCalculator {
 
 	public static int calculateFuelFromSpecsFile(String filePath, boolean considerFuelMass) {
 		int totalFuel = 0;
-		try (Stream<String> lines = Files.lines(ResourcePathExtractor.openResource("Day1/Day1Input1.txt"))) {
+		try (Stream<String> lines = Files.lines(ResourcePathExtractor.openResource(filePath))) {
 			int[] moduleMasses = lines.mapToInt(Integer::parseInt)
 					.toArray();
 			totalFuel = calculateTotalSpacecraftFuel(moduleMasses, considerFuelMass);

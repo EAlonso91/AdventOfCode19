@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
+import utils.Converters;
 import utils.ResourcePathExtractor;
 
 /**
@@ -15,21 +16,46 @@ import utils.ResourcePathExtractor;
  */
 public class ProgramAlarm {
 	public static String runIntcode(final String intcodeSequence) {
-		return "";
+		int[] intcodeArray = Converters.delimitedStringToDigitsArray(intcodeSequence,",");
+		int[] arrayCopy = intcodeArray;
+		for (int i = 0; i < arrayCopy.length; i+=4) {
+			int opcode = arrayCopy[i];
+			if(!isOpcode(opcode)){
+				throw new RuntimeException("Invalid sequence");
+			}
+			else if (opcode == 1){
+				arrayCopy[arrayCopy[i+3]] = arrayCopy[arrayCopy[i+1]] + arrayCopy[arrayCopy[i+2]];
+			}
+			else if (opcode == 2){
+				arrayCopy[arrayCopy[i+3]] = arrayCopy[arrayCopy[i+1]] * arrayCopy[arrayCopy[i+2]];
+			}
+			else if (opcode == 99){
+				break;
+			}
+		}
+		return Converters.digitsArrayToString(arrayCopy,",");
 	}
 
-	private static boolean opcodeChecker(String input) {
-		return input.equals("1") || input.equals("2") || input.equals("99");
+	private static boolean isOpcode(int input) {
+		return input == 1 || input == 2 || input == 99;
 	}
 
-	public static String runIntcodeFromFile(String filePath) {
-		String content = "";
+	public static String runIntcodeFromFile(String filePath, int noun, int verb) {
+		String outputSequence = "";
 		try {
-			Path path = ResourcePathExtractor.openResource("Day2/Day2Input1.txt");
-			content = new String(Files.readAllBytes(path));
+			Path path = ResourcePathExtractor.openResource(filePath);
+			String intcode = new String(Files.readAllBytes(path));
+			outputSequence = runIntcode(applyTransformations(intcode, noun,verb));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return content;
+		return outputSequence;
+	}
+
+	 static String applyTransformations(String intcode, int noun, int verb) {
+		String[] sequenceAsArray = intcode.split(",");
+		sequenceAsArray[1]=String.valueOf(noun);
+		sequenceAsArray[2]=String.valueOf(verb);
+		return String.join(",", sequenceAsArray);
 	}
 }
