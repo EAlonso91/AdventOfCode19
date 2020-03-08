@@ -26,5 +26,12 @@ public class Main {
 		long finish = System.currentTimeMillis();
 		long timeElapsed = (finish - start)/1000;
 		System.out.println("time: "+timeElapsed+"s");
+
+		start = System.currentTimeMillis();
+		int shortestSteps = CrossPathsDetector.calculateMinStepsFromFile("Day3/Day3Input1.txt");
+		System.out.println("Day 3 part 2 solution: "+shortestSteps);
+		finish = System.currentTimeMillis();
+		timeElapsed = (finish - start)/1000;
+		System.out.println("time: "+timeElapsed+"s");
 	}
 }
