@@ -2,6 +2,8 @@ import day1.fuelcalculator.FuelCalculator;
 import day2.programalarm.CalculateNounAndVerb;
 import day2.programalarm.ProgramAlarm;
 import day3.crossedwires.CrossPathsDetector;
+import day4.securecontainer.SecureContainerComplexAdjacency;
+import day4.securecontainer.SecureContainerSimpleAdjacency;
 
 /**
  * @author Enrique Alonso
@@ -20,7 +22,7 @@ public class Main {
 		System.out.println("Day 2 part 2 solution: "+ CalculateNounAndVerb.calculatePairParameters());
 
 		//******************DAY 3******************
-		long start = System.currentTimeMillis();
+		/*long start = System.currentTimeMillis();
 		int shortestDistance = CrossPathsDetector.calculateShortestCrossDistanceFromFile("Day3/Day3Input1.txt");
 		System.out.println("Day 3 part 1 solution: "+shortestDistance);
 		long finish = System.currentTimeMillis();
@@ -32,6 +34,13 @@ public class Main {
 		System.out.println("Day 3 part 2 solution: "+shortestSteps);
 		finish = System.currentTimeMillis();
 		timeElapsed = (finish - start)/1000;
-		System.out.println("time: "+timeElapsed+"s");
+		System.out.println("time: "+timeElapsed+"s");*/
+
+		//******************DAY 4******************
+		String range = "359282-820401";
+		int passwords = new SecureContainerSimpleAdjacency().passwordsFinder(range);
+		System.out.println("Day 4 part 1 solution: "+passwords);
+		passwords = new SecureContainerComplexAdjacency().passwordsFinder(range);
+		System.out.println("Day 4 part 2 solution: "+passwords);
 	}
 }
