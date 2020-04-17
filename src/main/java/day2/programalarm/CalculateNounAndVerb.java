@@ -26,7 +26,7 @@ public class CalculateNounAndVerb {
 	public static int calculatePairParameters(){
 		for (int i = 0; i < 100; i++) {
 			for (int j = 0; j < 100; j++) {
-				String outputSequence = ProgramAlarm.runIntcode(ProgramAlarm.applyTransformations(intcode, i, j));
+				String outputSequence = IntcodeComputer.runIntcode(IntcodeComputer.applyTransformations(intcode, i, j));
 				if(outputSequence.split(",")[0].equals(DESIREDOUTPUT)){
 					LOGGER.info("Noun: "+i);
 					LOGGER.info("Verb: "+j);
