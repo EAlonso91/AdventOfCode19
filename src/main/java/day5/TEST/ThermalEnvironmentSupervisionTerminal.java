@@ -14,70 +14,57 @@ import utils.ResourcePathExtractor;
 /**
  * @author Enrique Alonso
  */
-public class ThermalEnvironmentSupervisionTerminal extends IntcodeComputer {
+public class ThermalEnvironmentSupervisionTerminal {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ThermalEnvironmentSupervisionTerminal.class);
 
-	static {
-		ACCEPTED_OPCODES = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 99 };
-	}
-
 	protected static void runIntcode(final String intcodeSequence, int systemID) {
-		int[] intcodeArray = Converters.delimitedStringToDigitsArray(intcodeSequence, ",");
-		int[] arrayCopy = intcodeArray;
-
-		if (arrayCopy[0] != 3) {
-			throw new RuntimeException("Invalid start sequence");
-		}
-		arrayCopy[arrayCopy[1]] = systemID;
-
+		int[] intcodeArray = init(intcodeSequence, systemID);
 		int nextJump = 0;
-		for (int i = 2; i < arrayCopy.length; i += nextJump) {
-			int[] instructionCode = Converters.stringToDigitsArray(String.valueOf(arrayCopy[i]));
-			int opcode = extractOpcode(instructionCode);
-			if (!isOpcode(opcode)) {
-				throw new RuntimeException("Invalid sequence");
-			}
+		for (int i = 2; i < intcodeArray.length; i += nextJump) {
+			int[] instructionCode = Converters.stringToDigitsArray(String.valueOf(intcodeArray[i]));
+			int opcode = extractOpcodeFromInstruction(instructionCode);
 			int[] parameterModes = extactParameterModes(instructionCode, opcode);
 			if (opcode == 99) {
 				break;
 			} else if (opcode == 4) {
-				LOGGER.info("" + arrayCopy[arrayCopy[i + 1]]);
+				LOGGER.info("" + intcodeArray[intcodeArray[i + 1]]);
 				nextJump = 2;
 			} else {
-				int value1 = parameterModes[0] == 0 ? arrayCopy[arrayCopy[i + 1]] : arrayCopy[i + 1];
-				int value2 = parameterModes[1] == 0 ? arrayCopy[arrayCopy[i + 2]] : arrayCopy[i + 2];
-				if (opcode == 5) {
-					if (value1 != 0) {
-						i = value2;
-						nextJump = 0;
-					} else
-						nextJump = 3;
-				} else if (opcode == 6) {
-					if (value1 == 0) {
-						i = value2;
-						nextJump = 0;
-					} else
-						nextJump = 3;
+				int value1 = parameterModes[0] == 0 ? intcodeArray[intcodeArray[i + 1]] : intcodeArray[i + 1];
+				int value2 = parameterModes[1] == 0 ? intcodeArray[intcodeArray[i + 2]] : intcodeArray[i + 2];
+				if (opcode == 5 || opcode == 6) {
+					JumpOpcode jumpOp = new JumpOpcode(instructionCode, opcode);
+					jumpOp.setParameters(value1, value2);
+					JumpResult result = jumpOp.jump(i);
+					i = result.getCursor();
+					nextJump = result.getJump();
 				} else {
-					if (opcode == 1) {
-						//LOGGER.info("full instruction="+arrayCopy[i]+"/opcode="+opcode+"/parameterModes[0]="+parameterModes[0]+"/parameterModes[1]="+parameterModes[1]+"/1st value="+arrayCopy[i + 1]+"/2nd value="+arrayCopy[i + 2]);
-						arrayCopy[arrayCopy[i + 3]] = value1 + value2;
-					} else if (opcode == 2) {
-						arrayCopy[arrayCopy[i + 3]] = value1 * value2;
-					} else if (opcode == 7) {
-						if (value1 < value2) {
-							arrayCopy[arrayCopy[i + 3]] = 1;
-						} else
-							arrayCopy[arrayCopy[i + 3]] = 0;
-					} else if (opcode == 8) {
-						if (value1 == value2) {
-							arrayCopy[arrayCopy[i + 3]] = 1;
-						} else
-							arrayCopy[arrayCopy[i + 3]] = 0;
-					}
-					nextJump = 4;
+					WriteOpcode writeOp = new WriteOpcode(instructionCode, opcode);
+					writeOp.setParameters(value1, value2);
+					intcodeArray[intcodeArray[i + 3]] = writeOp.write();
+					nextJump = writeOp.jump();
+					//LOGGER.info("full instruction="+arrayCopy[i]+"/opcode="+opcode+"/parameterModes[0]="+parameterModes[0]+"/parameterModes[1]="+parameterModes[1]+"/1st value="+arrayCopy[i + 1]+"/2nd value="+arrayCopy[i + 2]);
 				}
 			}
+		}
+	}
+
+	private static int[] init(final String intcodeSequence, final int systemID) {
+		int[] intcodeArray = Converters.delimitedStringToDigitsArray(intcodeSequence, ",");
+
+		if (intcodeArray[0] != 3) {
+			throw new RuntimeException("Invalid start sequence");
+		}
+		intcodeArray[intcodeArray[1]] = systemID;
+		return intcodeArray;
+	}
+
+	private static int extractOpcodeFromInstruction(final int[] instructionCode) {
+		if (instructionCode.length == 1) {
+			return instructionCode[0];
+		} else {
+			return Integer.parseInt(
+					"" + instructionCode[instructionCode.length - 2] + instructionCode[instructionCode.length - 1]);
 		}
 	}
 
@@ -97,15 +84,6 @@ public class ThermalEnvironmentSupervisionTerminal extends IntcodeComputer {
 			}
 		}
 		return null;//no parameter modes needed
-	}
-
-	private static int extractOpcode(final int[] instructionCode) {
-		if (instructionCode.length == 1) {
-			return instructionCode[0];
-		} else {
-			return Integer.parseInt(
-					"" + instructionCode[instructionCode.length - 2] + instructionCode[instructionCode.length - 1]);
-		}
 	}
 
 	public static void runIntcodeFromFile(String filePath, int systemID) {
