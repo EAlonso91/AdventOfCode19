@@ -4,6 +4,7 @@ import day2.programalarm.IntcodeComputer;
 import day4.securecontainer.SecureContainerComplexAdjacency;
 import day4.securecontainer.SecureContainerSimpleAdjacency;
 import day5.TEST.ThermalEnvironmentSupervisionTerminal;
+import day6.orbitcountchecksum.OrbitCount;
 
 /**
  * @author Enrique Alonso
@@ -48,5 +49,11 @@ public class Main {
 		ThermalEnvironmentSupervisionTerminal.runIntcodeFromFile("Day5/Day5Input1.txt", 1);
 		System.out.println("Day 5 part 2 solution: ");
 		ThermalEnvironmentSupervisionTerminal.runIntcodeFromFile("Day5/Day5Input1.txt", 5);
+
+		//******************DAY 5******************
+		int orbitCount = OrbitCount.calculateOrbitCountChecksumFromFile("Day6/Day6Input1.txt");
+		System.out.println("Day 6 part 1 solution: "+orbitCount);
+		int distance = OrbitCount.calculateDistanceFromFile("YOU", "SAN", "Day6/Day6Input1.txt");
+		System.out.println("Day 6 part 1 solution: "+distance);
 	}
 }
