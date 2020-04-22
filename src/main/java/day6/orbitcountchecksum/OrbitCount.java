@@ -44,7 +44,7 @@ public class OrbitCount {
 		String origin = setOrigin(orbitPairs);
 		int orbits = 0;
 		for (Orbit orbit : orbitPairs) {
-			int newOrbits = orbitsToOrigin(orbit, orbitPairs, origin, new ArrayList<>());
+			int newOrbits = orbitsToOrigin(orbit, orbitPairs, origin).getDistance();
 			orbits += newOrbits;
 		}
 		return orbits;
@@ -73,10 +73,10 @@ public class OrbitCount {
 		return origin;
 	}
 
-	public static int orbitsToOrigin(final Orbit orbit, final List<Orbit> orbitPairs, String origin,
-			List<String> path) {
+	public static OrbitPath orbitsToOrigin(final Orbit orbit, final List<Orbit> orbitPairs, String origin) {
 		int orbits = 1;
 		String planet = orbit.getSource();
+		List<String> path = new ArrayList<>();
 		path.add(planet);
 		while (true) {
 			path.add(planet);
@@ -87,34 +87,44 @@ public class OrbitCount {
 			orbits++;
 			planet = getOrbitFromTarget(finalPlanet, orbitPairs).getSource();
 		}
-		return orbits;
+		return new OrbitPath(path, orbits);
 	}
 
 	public static int distanceBetweenObjects(String sourceObject, String targetObject, final String[] orbitsArray) {
 		List<Orbit> orbitPairs = init(orbitsArray);
 		String origin = setOrigin(orbitPairs);
-		Orbit initialOrbitFromSource = getOrbitFromTarget(sourceObject, orbitPairs);
-		Orbit initialOrbitFromTarget = getOrbitFromTarget(targetObject, orbitPairs);
-		List<String> pathFromSourceToOrigin = new ArrayList<>();
-		int distanceFromSourceToOrigin = orbitsToOrigin(initialOrbitFromSource, orbitPairs, origin,
-				pathFromSourceToOrigin);
-		List<String> pathFromTargetToOrigin = new ArrayList<>();
-		int distanceFromTargetToOrigin = orbitsToOrigin(initialOrbitFromTarget, orbitPairs, origin,
-				pathFromTargetToOrigin);
+		OrbitPath orbitPath1 = getDistanceToOrigin(orbitPairs, sourceObject, origin);
+		int distanceFromSourceToOrigin = orbitPath1.getDistance();
+		List<String> pathFromSourceToOrigin = orbitPath1.getPath();
+		OrbitPath orbitPath2 = getDistanceToOrigin(orbitPairs, targetObject, origin);
+		int distanceFromTargetToOrigin = orbitPath2.getDistance();
+		List<String> pathFromTargetToOrigin = orbitPath2.getPath();
+
+		int distanceFromCommonPointToOrigin = getDistanceFromCommonPointToOrigin(orbitPairs, origin,
+				pathFromSourceToOrigin, pathFromTargetToOrigin);
+		return (distanceFromSourceToOrigin - distanceFromCommonPointToOrigin) + (distanceFromTargetToOrigin
+				- distanceFromCommonPointToOrigin) - 2;
+	}
+
+	private static int getDistanceFromCommonPointToOrigin(final List<Orbit> orbitPairs, final String origin,
+			final List<String> pathFromSourceToOrigin, final List<String> pathFromTargetToOrigin) {
 		try {
 			String commonObject = pathFromSourceToOrigin.stream()
 					.filter(p -> pathFromTargetToOrigin.contains(p))
 					.findFirst()
 					.get();
-			LOGGER.info("Intersection planet: "+commonObject);
-			System.out.println(commonObject);
-			int distanceFromCommonPointToOrigin = orbitsToOrigin(getOrbitFromTarget(commonObject, orbitPairs),
-					orbitPairs, origin, new ArrayList<>());
-			return (distanceFromSourceToOrigin - distanceFromCommonPointToOrigin) + (distanceFromTargetToOrigin
-					- distanceFromCommonPointToOrigin) - 2;
+			LOGGER.info("Intersection planet: " + commonObject);
+			return orbitsToOrigin(getOrbitFromTarget(commonObject, orbitPairs), orbitPairs, origin).getDistance();
 		} catch (NoSuchElementException e) {
 			throw new RuntimeException("No path between source and target objects!");
 		}
+
+	}
+
+	private static OrbitPath getDistanceToOrigin(final List<Orbit> orbitPairs, final String sourceObject,
+			final String origin) {
+		Orbit initialOrbitFromSource = getOrbitFromTarget(sourceObject, orbitPairs);
+		return orbitsToOrigin(initialOrbitFromSource, orbitPairs, origin);
 	}
 
 	private static Orbit getOrbitFromTarget(final String targetObject, final List<Orbit> orbitPairs) {

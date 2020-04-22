@@ -14,13 +14,13 @@ public class OrbitCountTest {
 	@Test
 	public void calculateOrbit() {
 		List<Orbit> orbits = OrbitCount.init(new String[] { "COM)B", "B)C", "C)D", "D)E}" });
-		assertEquals(3, OrbitCount.orbitsToOrigin(new Orbit("C", "D"), orbits, "COM",new ArrayList<>()));
+		assertEquals(3, OrbitCount.orbitsToOrigin(new Orbit("C", "D"), orbits, "COM").getDistance());
 	}
 
 	@Test
 	public void calculateOrbit2() {
 		List<Orbit> orbits = OrbitCount.init(new String[] { "COM)B", "B)C", "C)D", "D)E", "E)J", "J)K", "K)L" });
-		assertEquals(7, OrbitCount.orbitsToOrigin(new Orbit("K", "L"), orbits, "COM",new ArrayList<>()));
+		assertEquals(7, OrbitCount.orbitsToOrigin(new Orbit("K", "L"), orbits, "COM").getDistance());
 	}
 
 	@Test
