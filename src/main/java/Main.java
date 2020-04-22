@@ -5,6 +5,7 @@ import day4.securecontainer.SecureContainerComplexAdjacency;
 import day4.securecontainer.SecureContainerSimpleAdjacency;
 import day5.TEST.ThermalEnvironmentSupervisionTerminal;
 import day6.orbitcountchecksum.OrbitCount;
+import day8.spaceimageformat.ImageDecoder;
 
 /**
  * @author Enrique Alonso
@@ -50,10 +51,14 @@ public class Main {
 		System.out.println("Day 5 part 2 solution: ");
 		ThermalEnvironmentSupervisionTerminal.runIntcodeFromFile("Day5/Day5Input1.txt", 5);
 
-		//******************DAY 5******************
+		//******************DAY 6******************
 		int orbitCount = OrbitCount.calculateOrbitCountChecksumFromFile("Day6/Day6Input1.txt");
 		System.out.println("Day 6 part 1 solution: "+orbitCount);
 		int distance = OrbitCount.calculateDistanceFromFile("YOU", "SAN", "Day6/Day6Input1.txt");
-		System.out.println("Day 6 part 1 solution: "+distance);
+		System.out.println("Day 6 part 2 solution: "+distance);
+
+		//******************DAY 8******************
+		long result = ImageDecoder.findResultInLayerWithLessZeroesFromFile(25, 6, "Day8/Day8Input1.txt");
+		System.out.println("Day 8 part 1 solution: "+result);
 	}
 }
