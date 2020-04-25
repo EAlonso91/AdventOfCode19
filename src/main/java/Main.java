@@ -60,5 +60,7 @@ public class Main {
 		//******************DAY 8******************
 		long result = ImageDecoder.findResultInLayerWithLessZeroesFromFile(25, 6, "Day8/Day8Input1.txt");
 		System.out.println("Day 8 part 1 solution: "+result);
+		System.out.println("Day 8 part 2 solution: ");
+		ImageDecoder.printImageFromFile(25, 6, "Day8/Day8Input1.txt");
 	}
 }
